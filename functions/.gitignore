@@ -1,0 +1,4 @@
+node_modules/
+vscode
+secrets.js
+service_account.json
