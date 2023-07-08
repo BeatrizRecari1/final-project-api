@@ -2,18 +2,24 @@ import { getFirestoreInstance } from "./utils.js";
 import { FieldValue } from "firebase-admin/firestore";
 
 export async function getAllExercises(req, res) {
+  const { userId } = req.params;
   const db = await getFirestoreInstance();
-
+  console.log(userId);
   db.collection("exercises")
     // .orderBy("createdAt", "desc")
+    // .where("owner", "==", userId)
     .orderBy("dow")
-
     .get()
     .then((collection) => {
-      const exercises = collection.docs.map((element) => ({
-        exercisesID: element.id,
-        ...element.data(),
-      }));
+      const exercises = collection.docs
+
+        .map((element) => ({
+          exercisesID: element.id,
+          ...element.data(),
+        }))
+        .filter((element) => {
+          return element.owner === userId;
+        });
       res.send(exercises);
     })
     .catch((err) => res.status(500).json({ error: err.message }));
